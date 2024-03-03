@@ -1,0 +1,10 @@
+{
+  "WebServer": {
+    "StopTimeoutMS": 5000,
+    "Port": 8080,
+    "HttpHandler": {
+      "UseLogger": false,
+      "UseRecovery": true
+    }
+  }
+}
