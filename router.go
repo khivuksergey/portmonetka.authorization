@@ -20,5 +20,9 @@ func NewRouter(config *webserver.HttpHandlerConfig, webservice WebService) *echo
 
 	e.GET("/health", webservice.Health)
 
+	e.POST("/login", webservice.Login)
+	e.POST("/users", webservice.CreateUser)
+	e.DELETE("/users/:id", webservice.DeleteUser)
+
 	return e
 }

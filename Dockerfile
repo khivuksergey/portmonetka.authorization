@@ -5,8 +5,16 @@ FROM golang:1.22
 # Set destination for COPY
 WORKDIR /app
 
+COPY go.mod go.sum wait-for-postgres.sh ./
+
+# Install psql
+RUN apt-get update
+RUN apt-get -y install postgresql-client
+
+# Make wait-for-postgres.sh executable
+RUN chmod +x wait-for-postgres.sh
+
 # Download Go modules
-COPY go.mod go.sum ./
 RUN go mod download
 
 # Copy the source code. Note the slash at the end, as explained in

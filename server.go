@@ -7,13 +7,18 @@ import (
 )
 
 type srv struct {
-	server  webserver.Server
+	webserver.Server
 	service WebService
 }
 
-func NewServer(config *webserver.WebServerConfig, router http.Handler, logger logger.Logger, options webserver.ServerOptions) webserver.Server {
-	srv := &srv{
-		server: webserver.NewServer(config, router, logger, options),
+func NewServer(
+	config *webserver.WebServerConfig,
+	router http.Handler,
+	logger logger.Logger,
+	options webserver.ServerOptions,
+) webserver.Server {
+	server := &srv{
+		Server: webserver.NewServer(config, router, logger, options),
 	}
-	return srv.server
+	return server
 }
