@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	loadEnv()
 	cfg := config.LoadConfiguration("config.json")
 	consoleLogger := logger.NewConsoleLogger()
 	webservice := NewWebService(cfg, consoleLogger)

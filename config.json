@@ -8,6 +8,6 @@
     }
   },
   "DB": {
-    "DSN": "user=portmonetka password=%s dbname=portmonetka.authorization port=5432 sslmode=disable"
+    "DSN": "user=%s password=%s dbname=%s host=%s port=5432 sslmode=disable TimeZone=%s"
   }
 }
