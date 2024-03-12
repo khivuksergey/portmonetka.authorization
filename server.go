@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/khivuksergey/portmonetka.authorization/webservice"
 	"github.com/khivuksergey/webserver"
 	"github.com/khivuksergey/webserver/logger"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 
 type srv struct {
 	webserver.Server
-	service WebService
+	service webservice.WebService
 }
 
 func NewServer(

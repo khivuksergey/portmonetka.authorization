@@ -1,28 +1,33 @@
 package main
 
 import (
+	"github.com/khivuksergey/portmonetka.authorization/middleware"
+	"github.com/khivuksergey/portmonetka.authorization/webservice"
 	"github.com/khivuksergey/webserver"
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echomiddleware "github.com/labstack/echo/v4/middleware"
 )
 
-func NewRouter(config *webserver.HttpHandlerConfig, webservice WebService) *echo.Echo {
+func NewRouter(cfg *webserver.HttpHandlerConfig, webservice webservice.WebService) *echo.Echo {
 	e := echo.New()
 
-	if config != nil {
-		if config.UseLogger {
-			e.Use(middleware.Logger())
+	if cfg != nil {
+		if cfg.UseLogger {
+			e.Use(echomiddleware.Logger())
 		}
-		if config.UseRecovery {
-			e.Use(middleware.Recover())
+		if cfg.UseRecovery {
+			e.Use(echomiddleware.Recover())
 		}
 	}
 
 	e.GET("/health", webservice.Health)
 
 	e.POST("/login", webservice.Login)
+
 	e.POST("/users", webservice.CreateUser)
-	e.DELETE("/users/:id", webservice.DeleteUser)
+	e.DELETE("/users/:userId", webservice.DeleteUser, middleware.JWTAuthorization, middleware.Authentication)
+	e.PUT("/users/:userId/username", webservice.UpdateUserName, middleware.JWTAuthorization, middleware.Authentication)
+	e.PUT("/users/:userId/password", webservice.UpdateUserPassword, middleware.JWTAuthorization, middleware.Authentication)
 
 	return e
 }

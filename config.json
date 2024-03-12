@@ -8,6 +8,7 @@
     }
   },
   "DB": {
-    "DSN": "user=%s password=%s dbname=%s host=%s port=5432 sslmode=disable TimeZone=%s"
+    "DSN": "user=%s password=%s dbname=%s host=%s port=5432 sslmode=disable TimeZone=%s",
+    "TablePrefix": "portmonetka."
   }
 }

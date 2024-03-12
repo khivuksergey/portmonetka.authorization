@@ -2,17 +2,20 @@ package main
 
 import (
 	"github.com/khivuksergey/portmonetka.authorization/config"
+	"github.com/khivuksergey/portmonetka.authorization/env"
+	"github.com/khivuksergey/portmonetka.authorization/webservice"
 	"github.com/khivuksergey/webserver"
 	"github.com/khivuksergey/webserver/logger"
 	"os"
 )
 
 func main() {
-	loadEnv()
+	env.LoadEnv()
 	cfg := config.LoadConfiguration("config.json")
 	consoleLogger := logger.NewConsoleLogger()
-	webservice := NewWebService(cfg, consoleLogger)
+	webservice := webservice.NewWebService(cfg, consoleLogger)
 	router := NewRouter(&cfg.WebServer.HttpHandler, webservice)
+
 	options := webserver.ServerOptions{
 		UseLogger: true,
 	}

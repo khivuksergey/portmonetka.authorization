@@ -9,7 +9,7 @@ ENV POSTGRES_PASSWORD=^+h9Cd~D/8JAHOB7
 
 #COPY wait-for-postgres.sh ./
 # Install psql
-#RUN apt-get update && apt-get -y install postgresql-client
+RUN apt-get update && apt-get -y install postgresql-client
 
 # Make wait-for-postgres.sh executable
 #RUN chmod +x wait-for-postgres.sh
@@ -19,6 +19,8 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
+
+RUN chmod +x wait-for-postgres.sh
 
 # Build
 RUN CGO_ENABLED=0 GOOS=linux go build -o /portmonetka.authorization

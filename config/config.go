@@ -13,7 +13,8 @@ type Configuration struct {
 }
 
 type DBConfig struct {
-	DSN string
+	DSN         string
+	TablePrefix string
 }
 
 func LoadConfiguration(path string) (config *Configuration) {
