@@ -1,2 +1,2 @@
 # portmonetka.authorization
-Authorization and authenication service for portmonetka
+Authorization and authentication service for portmonetka

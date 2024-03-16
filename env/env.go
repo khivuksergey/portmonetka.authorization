@@ -2,7 +2,7 @@ package env
 
 import (
 	"fmt"
-	"github.com/khivuksergey/portmonetka.authorization/errors"
+	"github.com/khivuksergey/portmonetka.authorization/common"
 	"os"
 )
 
@@ -14,11 +14,10 @@ var (
 	PgPassword string
 	PgDbName   string
 	PgHost     string
-	PgTimezone string
 )
 
 func LoadEnv() {
-	var errMsg errors.ErrorMessage
+	var errMsg common.ErrorMessage
 
 	// JWT
 	JwtSecret = []byte(os.Getenv("JWT_SECRET"))
@@ -46,10 +45,6 @@ func LoadEnv() {
 	PgHost = os.Getenv("POSTGRES_HOST")
 	if PgHost == "" {
 		errMsg.Append(envErrorMsg("POSTGRES_HOST"))
-	}
-	PgTimezone = os.Getenv("POSTGRES_TIMEZONE")
-	if PgTimezone == "" {
-		errMsg.Append(envErrorMsg("POSTGRES_TIMEZONE"))
 	}
 
 	if err := errMsg.ToError(); err != nil {

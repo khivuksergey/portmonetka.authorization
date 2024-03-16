@@ -1,36 +1,24 @@
-package db
+package repo
 
 import (
 	"errors"
 	"fmt"
-	"github.com/khivuksergey/portmonetka.authorization/config"
-	autherrors "github.com/khivuksergey/portmonetka.authorization/errors"
-	"github.com/khivuksergey/portmonetka.authorization/model"
-	"github.com/khivuksergey/portmonetka.authorization/utility"
+	autherrors "github.com/khivuksergey/portmonetka.authorization/common"
+	"github.com/khivuksergey/portmonetka.authorization/common/utility"
+	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/entity"
+	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
+	"github.com/khivuksergey/portmonetka.authorization/internal/model"
 	"gorm.io/gorm"
 	"time"
 )
-
-type UserRepository interface {
-	Exists(name string) bool
-	FindUserByName(name string) (*model.User, error)
-	FindUserById(id uint64) (*model.User, error)
-	CreateUser(name, password string) (uint64, error)
-	UpdateUser(user model.User) error
-	DeleteUser(id uint64) error
-	UpdateLastLoginTime(userId uint64, loginTime time.Time)
-}
 
 type userRepository struct {
 	db        *gorm.DB
 	tableName string
 }
 
-func NewUserRepository(dbConfig config.DBConfig) UserRepository {
-	return &userRepository{
-		NewDb(dbConfig),
-		dbConfig.TablePrefix + "users",
-	}
+func NewUserRepository(db *gorm.DB) repository.UserRepository {
+	return &userRepository{db: db, tableName: entity.User{}.TableName()}
 }
 
 func (r *userRepository) Exists(name string) bool {
@@ -47,15 +35,7 @@ func (r *userRepository) FindUserByName(name string) (user *model.User, err erro
 	return
 }
 
-func (r *userRepository) FindUserById(id uint64) (user *model.User, err error) {
-	result := r.db.Where("id = ?", id).First(&user)
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		err = autherrors.UserNotFound
-	}
-	return
-}
-
-func (r *userRepository) CreateUser(name, password string) (userId uint64, err error) {
+func (r *userRepository) CreateUser(name, password string) (userId *uint64, err error) {
 	hashedPassword, err := utility.HashPassword(password)
 	if err != nil {
 		return
@@ -67,12 +47,26 @@ func (r *userRepository) CreateUser(name, password string) (userId uint64, err e
 	if err = r.db.Create(user).Error; err != nil {
 		return
 	}
-	userId = user.Id
+	userId = &user.Id
 	return
 }
 
-func (r *userRepository) UpdateUser(user model.User) error {
-	return r.db.Save(&user).Error
+func (r *userRepository) UpdateUserName(id uint64, name string) error {
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Update("name", name).
+		Error
+}
+
+func (r *userRepository) UpdateUserPassword(id uint64, password string) error {
+	hashedPassword, err := utility.HashPassword(password)
+	if err != nil {
+		return err
+	}
+	return r.db.Model(&model.User{}).
+		Where("id = ?", id).
+		Update("password", hashedPassword).
+		Error
 }
 
 func (r *userRepository) DeleteUser(id uint64) error {

@@ -5,20 +5,6 @@ import (
 	"time"
 )
 
-type Response struct {
-	Message string
-	Data    any
-}
-
-type TokenResponse struct {
-	AccessToken string    `json:"access_token"`
-	TokenType   string    `json:"token_type"`
-	ExpiresIn   int64     `json:"expires_in"`
-	IssuedAt    time.Time `json:"issued_at"`
-	Issuer      string    `json:"issuer"`
-	Subject     uint64    `json:"subject"`
-}
-
 type User struct {
 	Id         uint64         `gorm:"primarykey"`
 	Name       string         `gorm:"unique;not null"`
@@ -43,9 +29,11 @@ type UserLoginDTO struct {
 }
 
 type UserUpdateNameDTO struct {
+	Id   uint64 `json:"id"`
 	Name string `json:"name"`
 }
 
 type UserUpdatePasswordDTO struct {
+	Id       uint64 `json:"id"`
 	Password string `json:"password"`
 }
