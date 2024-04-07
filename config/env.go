@@ -1,0 +1,37 @@
+package config
+
+import (
+	"fmt"
+	"github.com/khivuksergey/portmonetka.authorization/common"
+	"github.com/spf13/viper"
+)
+
+func LoadEnv() (err error) {
+	var errMsg common.ErrorMessage
+
+	requiredEnvVars := []string{
+		"JWT_SECRET",
+		"JWT_ISSUER",
+		"DB_USER",
+		"DB_PASSWORD",
+		"DB_NAME",
+		"DB_HOST",
+	}
+
+	viper.AutomaticEnv()
+
+	for _, env := range requiredEnvVars {
+		if !viper.IsSet(env) {
+			errMsg.Append(envErrorMsg(env))
+		}
+	}
+
+	err = errMsg.ToError()
+	if err != nil {
+		fmt.Printf("error loading environment variables: %v\n", err)
+	}
+
+	return
+}
+
+func envErrorMsg(env string) string { return fmt.Sprintf("%s missing", env) }

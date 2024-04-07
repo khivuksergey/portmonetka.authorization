@@ -16,7 +16,8 @@ func NewUserService(repo *repository.Manager) service.UserService {
 }
 
 func (u *user) CreateUser(userCreateDTO *model.UserCreateDTO) (userId *uint64, err error) {
-	if err = u.validateUserCreate(userCreateDTO); err != nil {
+	if u.userRepository.Exists(userCreateDTO.Name) {
+		err = common.UserAlreadyExists
 		return
 	}
 	userId, err = u.userRepository.CreateUser(userCreateDTO.Name, userCreateDTO.Password)
@@ -28,43 +29,12 @@ func (u *user) DeleteUser(userId uint64) error {
 }
 
 func (u *user) UpdateUserName(userUpdateNameDTO *model.UserUpdateNameDTO) error {
-	if err := u.validateUserUpdateName(userUpdateNameDTO); err != nil {
-		return err
+	if u.userRepository.Exists(userUpdateNameDTO.Name) {
+		return common.UserAlreadyExists
 	}
 	return u.userRepository.UpdateUserName(userUpdateNameDTO.Id, userUpdateNameDTO.Name)
 }
 
 func (u *user) UpdateUserPassword(userUpdatePasswordDTO *model.UserUpdatePasswordDTO) error {
-	if err := u.validateUserUpdatePassword(userUpdatePasswordDTO); err != nil {
-		return err
-	}
 	return u.userRepository.UpdateUserPassword(userUpdatePasswordDTO.Id, userUpdatePasswordDTO.Password)
-}
-
-func (u *user) validateUserCreate(userCreateDTO *model.UserCreateDTO) error {
-	if userCreateDTO.Name == "" || userCreateDTO.Password == "" {
-		return common.EmptyNamePassword
-	}
-	// ignores deleted, but there's a unique constraint in db
-	if u.userRepository.Exists(userCreateDTO.Name) {
-		return common.UserAlreadyExists
-	}
-	return nil
-}
-
-func (u *user) validateUserUpdateName(userUpdateNameDTO *model.UserUpdateNameDTO) error {
-	if userUpdateNameDTO.Name == "" {
-		return common.EmptyName
-	}
-	if u.userRepository.Exists(userUpdateNameDTO.Name) {
-		return common.UserAlreadyExists
-	}
-	return nil
-}
-
-func (u *user) validateUserUpdatePassword(userUpdatePasswordDTO *model.UserUpdatePasswordDTO) error {
-	if userUpdatePasswordDTO.Password == "" {
-		return common.EmptyPassword
-	}
-	return nil
 }

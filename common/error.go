@@ -6,15 +6,13 @@ import (
 )
 
 var (
-	InvalidUserData   = errors.New("invalid user data")
-	EmptyName         = errors.New("name cannot be empty")
-	EmptyPassword     = errors.New("password cannot be empty")
 	EmptyNamePassword = errors.New("name and password cannot be empty")
-	UserAlreadyExists = errors.New("user with this name already exists")
+	InvalidPassword   = errors.New("invalid password")
+	InvalidUserData   = errors.New("invalid user data")
 	NilUserToken      = errors.New("cannot get token for nil user")
 	TokenClaimsFail   = errors.New("failed to get token claims")
+	UserAlreadyExists = errors.New("user with this name already exists")
 	UserNotFound      = errors.New("user was not found")
-	InvalidPassword   = errors.New("invalid password")
 	GetTokenError     = func(err error) error { return fmt.Errorf("get token error: %v", err) }
 )
 

@@ -3,8 +3,8 @@ package common
 import "time"
 
 type Response struct {
-	Message string
-	Data    any
+	Message string `json:"message"`
+	Data    any    `json:"data,omitempty"`
 }
 
 type TokenResponse struct {

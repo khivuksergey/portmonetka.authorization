@@ -5,8 +5,8 @@ import (
 	"github.com/khivuksergey/webserver/logger"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
+	"github.com/spf13/viper"
 	"net/http"
-	"os"
 	"strconv"
 )
 
@@ -24,10 +24,11 @@ type Middleware struct {
 func NewMiddleware(logger logger.Logger) *Middleware {
 	return &Middleware{
 		logger: logger,
-		JWT:    echojwt.JWT([]byte(os.Getenv("JWT_SECRET"))),
+		JWT:    echojwt.JWT([]byte(viper.GetString("JWT_SECRET"))),
 	}
 }
 
+// Authentication middleware checks if path param "userId" is the same as the subject in JWT from the Context
 func (m *Middleware) Authentication(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// take user token from jwt

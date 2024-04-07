@@ -15,25 +15,3 @@ type User struct {
 	UpdatedAt  time.Time
 	LastLogin  time.Time
 }
-
-type UserCreateDTO struct {
-	Name     string `json:"name"`
-	Password string `json:"password"`
-}
-
-type UserLoginDTO struct {
-	Id         uint64 `json:"id"`
-	Name       string `json:"name"`
-	Password   string `json:"password"`
-	RememberMe bool   `json:"remember_me"`
-}
-
-type UserUpdateNameDTO struct {
-	Id   uint64 `json:"id"`
-	Name string `json:"name"`
-}
-
-type UserUpdatePasswordDTO struct {
-	Id       uint64 `json:"id"`
-	Password string `json:"password"`
-}

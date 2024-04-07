@@ -3,11 +3,11 @@ package gorm
 import (
 	"fmt"
 	"github.com/khivuksergey/portmonetka.authorization/config"
-	"github.com/khivuksergey/portmonetka.authorization/env"
 	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/entity"
 	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/gorm/repo"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/storage"
+	"github.com/spf13/viper"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -28,17 +28,22 @@ func NewDbManager(config config.DBConfig) (storage.IDB, error) {
 }
 
 func (m *dbManager) InitDB(config config.DBConfig) (err error) {
-	dsn := fmt.Sprintf(config.DSN, env.PgUser, env.PgPassword, env.PgDbName, env.PgHost)
+	dsn := fmt.Sprintf(config.ConnectionString,
+		viper.GetString("DB_USER"),
+		viper.GetString("DB_PASSWORD"),
+		viper.GetString("DB_NAME"),
+		viper.GetString("DB_HOST"),
+	)
 
-	m.db, err = gorm.Open(postgres.New(postgres.Config{
-		DSN:                  dsn,
-		PreferSimpleProtocol: true,
-	}), &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Info),
-		//NamingStrategy: schema.NamingStrategy{
-		//	TablePrefix: config.TablePrefix,
-		//},
-	})
+	m.db, err = gorm.Open(
+		postgres.New(postgres.Config{
+			DSN:                  dsn,
+			PreferSimpleProtocol: true,
+		}),
+		&gorm.Config{
+			Logger: logger.Default.LogMode(logger.Warn),
+		},
+	)
 
 	if err != nil {
 		return err

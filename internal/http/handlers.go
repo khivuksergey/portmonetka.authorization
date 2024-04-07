@@ -8,8 +8,8 @@ import (
 
 type Handlers struct {
 	middleware    *handler.Middleware
-	authorization *handler.AuthorizationHandler
 	health        *handler.HealthHandler
+	authorization *handler.AuthorizationHandler
 	user          *handler.UserHandler
 }
 

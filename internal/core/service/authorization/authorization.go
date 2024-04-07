@@ -4,10 +4,10 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/khivuksergey/portmonetka.authorization/common"
 	"github.com/khivuksergey/portmonetka.authorization/common/utility"
-	"github.com/khivuksergey/portmonetka.authorization/env"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/service"
 	"github.com/khivuksergey/portmonetka.authorization/internal/model"
+	"github.com/spf13/viper"
 	"time"
 )
 
@@ -69,12 +69,12 @@ func (a *authorization) getToken(user *model.UserLoginDTO) (*common.TokenRespons
 		expiry = now.Add(time.Hour * 24 * 7)
 	}
 
-	claims["iss"] = env.JwtIssuer
+	claims["iss"] = viper.GetString("JWT_ISSUER")
 	claims["sub"] = user.Id
 	claims["iat"] = now.Unix()
 	claims["exp"] = expiry.Unix()
 
-	tokenString, err := token.SignedString(env.JwtSecret)
+	tokenString, err := token.SignedString(viper.GetString("JWT_SECRET"))
 	if err != nil {
 		return nil, err
 	}

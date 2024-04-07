@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/khivuksergey/portmonetka.authorization/config"
-	"github.com/khivuksergey/portmonetka.authorization/env"
+	_ "github.com/khivuksergey/portmonetka.authorization/docs"
 	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/gorm"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/service"
 	"github.com/khivuksergey/portmonetka.authorization/internal/http"
@@ -11,11 +11,18 @@ import (
 	"os"
 )
 
+// @title Portmonetka authorization & user service
+// @description JWT authorization and authentication. User service.
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:8080
+// @BasePath /
+// @schemes http https
 func main() {
-	env.LoadEnv()
 	cfg := config.LoadConfiguration("config.json")
-
-	consoleLogger := logger.NewConsoleLogger()
+	if err := config.LoadEnv(); err != nil {
+		panic(err)
+	}
 
 	db, err := gorm.NewDbManager(cfg.DB)
 	if err != nil {
@@ -26,15 +33,23 @@ func main() {
 
 	services := service.NewServiceManager(repositoryManager)
 
-	router := http.NewRouter(&cfg.WebServer.HttpHandler, services, consoleLogger)
+	consoleLogger := logger.NewConsoleLogger()
 
-	options := webserver.ServerOptions{
-		UseLogger: true,
-	}
-	server := http.NewServer(cfg, router, consoleLogger, options)
+	router := http.NewRouter(&cfg.WebServer.Router, services, consoleLogger)
+
+	server := http.NewServer(cfg, router)
+
+	server.AddLogger(consoleLogger)
+
+	server.AddStopHandlers(&[]webserver.StopHandler{
+		{
+			Description: "Postgres",
+			Stop:        db.Close,
+		},
+	})
 
 	quit := make(chan os.Signal, 1)
-	if webserver.RunServer(server, &quit) != nil {
+	if err = webserver.RunServer(server, &quit); err != nil {
 		panic(err)
 	}
 }
