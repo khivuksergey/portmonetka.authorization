@@ -26,6 +26,7 @@ func NewAuthorizationHandler(services *service.Manager, logger logger.Logger) *A
 
 // Login returns authorization token for existing user
 //
+//	@Tags Authorization
 //	@Summary		Login with user credentials
 //	@Description	Login by username and password
 //	@ID				login

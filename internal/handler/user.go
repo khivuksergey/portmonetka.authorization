@@ -26,6 +26,7 @@ func NewUserHandler(services *service.Manager, logger logger.Logger) *UserHandle
 
 // CreateUser creates a new user.
 //
+// @Tags User
 // @Summary Create a new user
 // @Description Creates a new user with the provided information
 // @ID create-user
@@ -66,6 +67,7 @@ func (u UserHandler) CreateUser(c echo.Context) error {
 
 // DeleteUser deletes a user by ID.
 //
+// @Tags User
 // @Summary Delete user
 // @Description Deletes user by the provided user ID
 // @ID delete-user
@@ -101,6 +103,7 @@ func (u UserHandler) DeleteUser(c echo.Context) error {
 
 // UpdateUserName updates the name of a user.
 //
+// @Tags User
 // @Summary Update username
 // @Description Updates the name of a user
 // @ID update-user-name
@@ -148,6 +151,7 @@ func (u UserHandler) UpdateUserName(c echo.Context) error {
 
 // UpdateUserPassword updates the password of a user.
 //
+// @Tags User
 // @Summary Update user password
 // @Description Updates the password of a user
 // @ID update-user-password

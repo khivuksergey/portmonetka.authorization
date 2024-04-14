@@ -19,6 +19,7 @@ func NewHealthHandler(logger logger.Logger) *HealthHandler {
 
 // Health checks the health of the service.
 //
+// @Tags Health
 // @Summary Check service health
 // @Description Checks if the service is working properly
 // @ID health

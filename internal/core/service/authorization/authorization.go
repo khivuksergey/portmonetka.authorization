@@ -74,7 +74,7 @@ func (a *authorization) getToken(user *model.UserLoginDTO) (*common.TokenRespons
 	claims["iat"] = now.Unix()
 	claims["exp"] = expiry.Unix()
 
-	tokenString, err := token.SignedString(viper.GetString("JWT_SECRET"))
+	tokenString, err := token.SignedString([]byte(viper.GetString("JWT_SECRET")))
 	if err != nil {
 		return nil, err
 	}

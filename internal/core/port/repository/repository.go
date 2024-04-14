@@ -9,6 +9,7 @@ type Manager struct {
 	User UserRepository
 }
 
+//go:generate mockgen -source=repository.go -destination=../../../adapter/storage/gorm/repo/mock/mock_repository.go -package=mock
 type UserRepository interface {
 	Exists(name string) bool
 	FindUserByName(name string) (*model.User, error)
