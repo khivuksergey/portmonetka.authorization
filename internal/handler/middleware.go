@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/khivuksergey/portmonetka.authorization/common"
 	"github.com/khivuksergey/webserver/logger"
 	echojwt "github.com/labstack/echo-jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -34,32 +35,39 @@ func (m *Middleware) Authentication(next echo.HandlerFunc) echo.HandlerFunc {
 		// take user token from jwt
 		user, ok := c.Get("user").(*jwt.Token)
 		if !ok {
-			return InvalidToken
+			return m.setStatusCodeWithError(c, http.StatusUnauthorized, InvalidToken)
 		}
 
 		claims, ok := user.Claims.(jwt.MapClaims)
 		if !ok {
-			return InvalidToken
+			return m.setStatusCodeWithError(c, http.StatusUnauthorized, InvalidToken)
 		}
 
-		sub, ok := claims["sub"].(float64)
+		subject, ok := claims["sub"].(uint64)
 		if !ok {
-			return InvalidToken
+			return m.setStatusCodeWithError(c, http.StatusUnauthorized, InvalidToken)
 		}
-		subject := uint64(sub)
+		//subject := uint64(sub)
 
 		// take userId path param
 		userId, err := strconv.ParseUint(c.Param("userId"), 10, 64)
 		if err != nil {
-			return InvalidPathParam
+			return m.setStatusCodeWithError(c, http.StatusUnauthorized, InvalidPathParam)
 		}
 
 		if subject != userId {
-			return UnauthorizedAccess
+			return m.setStatusCodeWithError(c, http.StatusUnauthorized, UnauthorizedAccess)
 		}
 
 		c.Set("userId", userId)
 
 		return next(c)
 	}
+}
+
+func (m *Middleware) setStatusCodeWithError(c echo.Context, code int, err error) error {
+	_ = c.JSON(code, common.Response{
+		Message: err.Error(),
+	})
+	return err
 }
