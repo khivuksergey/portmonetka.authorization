@@ -1,0 +1,243 @@
+basePath: /
+definitions:
+  common.Response:
+    properties:
+      data: {}
+      message:
+        type: string
+    type: object
+  model.UserCreateDTO:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+    required:
+    - name
+    - password
+    type: object
+  model.UserLoginDTO:
+    properties:
+      name:
+        type: string
+      password:
+        type: string
+      remember_me:
+        type: boolean
+    required:
+    - name
+    - password
+    type: object
+  model.UserUpdateNameDTO:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  model.UserUpdatePasswordDTO:
+    properties:
+      password:
+        type: string
+    required:
+    - password
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: JWT authorization and authentication. User service.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  title: Portmonetka authorization & user service
+paths:
+  /health:
+    get:
+      description: Checks if the service is working properly
+      operationId: health
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: Check service health
+      tags:
+      - Health
+  /login:
+    post:
+      consumes:
+      - application/json
+      description: Login by username and password
+      operationId: login
+      parameters:
+      - description: user login information
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserLoginDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/common.Response'
+        "400":
+          description: 'Bad Request: Invalid user data'
+          schema:
+            $ref: '#/definitions/common.Response'
+        "401":
+          description: 'Unauthorized: Invalid credentials'
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: Login with user credentials
+      tags:
+      - Authorization
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user with the provided information
+      operationId: create-user
+      parameters:
+      - description: User object to be created
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserCreateDTO'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            $ref: '#/definitions/common.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/common.Response'
+        "422":
+          description: Unprocessable entity
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: Create a new user
+      tags:
+      - User
+  /users/{userId}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes user by the provided user ID
+      operationId: delete-user
+      parameters:
+      - description: User ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No content
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/common.Response'
+        "422":
+          description: Unprocessable entity
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: Delete user
+      tags:
+      - User
+  /users/{userId}/password:
+    put:
+      consumes:
+      - application/json
+      description: Updates the password of a user
+      operationId: update-user-password
+      parameters:
+      - description: Authorized user ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      - description: User update password request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdatePasswordDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User password updated
+          schema:
+            $ref: '#/definitions/common.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/common.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/common.Response'
+        "422":
+          description: Unprocessable entity
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: Update user password
+      tags:
+      - User
+  /users/{userId}/username:
+    put:
+      consumes:
+      - application/json
+      description: Updates the name of a user
+      operationId: update-user-name
+      parameters:
+      - description: Authorized user ID
+        in: path
+        name: userId
+        required: true
+        type: integer
+      - description: User update name request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdateNameDTO'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Username updated
+          schema:
+            $ref: '#/definitions/common.Response'
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/common.Response'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/common.Response'
+        "422":
+          description: Unprocessable entity
+          schema:
+            $ref: '#/definitions/common.Response'
+      summary: Update username
+      tags:
+      - User
+schemes:
+- http
+- https
+swagger: "2.0"
