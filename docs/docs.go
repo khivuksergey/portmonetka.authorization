@@ -19,27 +19,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/health": {
-            "get": {
-                "description": "Checks if the service is working properly",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Health"
-                ],
-                "summary": "Check service health",
-                "operationId": "health",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/common.Response"
-                        }
-                    }
-                }
-            }
-        },
         "/login": {
             "post": {
                 "description": "Login by username and password",
@@ -56,7 +35,7 @@ const docTemplate = `{
                 "operationId": "login",
                 "parameters": [
                     {
-                        "description": "user login information",
+                        "description": "User login information",
                         "name": "user",
                         "in": "body",
                         "required": true,
@@ -307,6 +286,9 @@ const docTemplate = `{
                 "data": {},
                 "message": {
                     "type": "string"
+                },
+                "request_uuid": {
+                    "type": "string"
                 }
             }
         },
@@ -375,7 +357,7 @@ var SwaggerInfo = &swag.Spec{
 	BasePath:         "/",
 	Schemes:          []string{"http", "https"},
 	Title:            "Portmonetka authorization & user service",
-	Description:      "JWT authorization and authentication. User service.",
+	Description:      "Authorization service.\nUser service.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

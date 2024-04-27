@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func LoadEnv() (err error) {
+func LoadEnv() {
 	var errMsg common.ErrorMessage
 
 	requiredEnvVars := []string{
@@ -26,12 +26,11 @@ func LoadEnv() (err error) {
 		}
 	}
 
-	err = errMsg.ToError()
+	err := errMsg.ToError()
 	if err != nil {
 		fmt.Printf("error loading environment variables: %v\n", err)
+		panic(err)
 	}
-
-	return
 }
 
 func envErrorMsg(env string) string { return fmt.Sprintf("%s missing", env) }

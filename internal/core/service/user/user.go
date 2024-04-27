@@ -11,17 +11,15 @@ type user struct {
 	userRepository repository.UserRepository
 }
 
-func NewUserService(repo *repository.Manager) service.UserService {
-	return &user{userRepository: repo.User}
+func NewUserService(repositoryManager *repository.Manager) service.UserService {
+	return &user{userRepository: repositoryManager.User}
 }
 
-func (u *user) CreateUser(userCreateDTO *model.UserCreateDTO) (userId *uint64, err error) {
+func (u *user) CreateUser(userCreateDTO *model.UserCreateDTO) (*uint64, error) {
 	if u.userRepository.Exists(userCreateDTO.Name) {
-		err = common.UserAlreadyExists
-		return
+		return nil, common.UserAlreadyExists
 	}
-	userId, err = u.userRepository.CreateUser(userCreateDTO.Name, userCreateDTO.Password)
-	return
+	return u.userRepository.CreateUser(userCreateDTO.Name, userCreateDTO.Password)
 }
 
 func (u *user) DeleteUser(userId uint64) error {

@@ -7,13 +7,20 @@ import (
 )
 
 type Configuration struct {
-	WebServer webserver.WebServerConfig
-	DB        DBConfig
+	Server  webserver.ServerConfig
+	Router  webserver.RouterConfig
+	Swagger *webserver.SwaggerConfig
+	Logger  *LoggerConfig
+	DB      DBConfig
 }
 
 type DBConfig struct {
 	ConnectionString string
 	TablePrefix      string
+}
+
+type LoggerConfig struct {
+	LogLevel string
 }
 
 func LoadConfiguration(path string) *Configuration {
@@ -36,7 +43,7 @@ func LoadConfiguration(path string) *Configuration {
 func defaultConfiguration() *Configuration {
 	fmt.Println("loading default configuration...")
 	return &Configuration{
-		WebServer: webserver.DefaultWebServerConfig,
-		DB:        DBConfig{},
+		Server: webserver.DefaultServerConfig,
+		Router: webserver.DefaultRouterConfig,
 	}
 }

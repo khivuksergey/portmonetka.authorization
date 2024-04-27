@@ -1,8 +1,8 @@
-package handler
+package middleware
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/khivuksergey/portmonetka.authorization/internal/handler"
+	"github.com/khivuksergey/portmonetka.authorization/internal/handler/middleware"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 	"net/http"
@@ -12,7 +12,7 @@ import (
 
 func TestAuthentication_Success(t *testing.T) {
 	claims := jwt.MapClaims{
-		"sub": userId,
+		"sub": float64(userId),
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
@@ -26,16 +26,12 @@ func TestAuthentication_Success(t *testing.T) {
 	c.SetParamNames("userId")
 	c.SetParamValues(userIdStr)
 
-	middleware := handler.NewMiddleware(nil)
-	authMiddleware := middleware.Authentication(func(c echo.Context) error {
-		id, ok := c.Get("userId").(uint64)
-		if !ok || id != userId {
-			return c.String(http.StatusUnauthorized, "Invalid userId in context in next handler")
-		}
-		return c.String(http.StatusOK, "Success")
-	})
+	authMiddleware := middleware.NewAuthenticationMiddleware(nil)
+	authenticate := authMiddleware.Authenticate(nextFunc)
 
-	assert.NoError(t, authMiddleware(c))
+	err := authenticate(c)
+
+	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, rec.Code)
 	assert.Equal(t, "Success", rec.Body.String())
 }
@@ -47,14 +43,8 @@ func TestAuthentication_Errors(t *testing.T) {
 	e := echo.New()
 	c := e.NewContext(req, rec)
 
-	middleware := handler.NewMiddleware(nil)
-	authMiddleware := middleware.Authentication(func(c echo.Context) error {
-		id, ok := c.Get("userId").(uint64)
-		if !ok || id != userId {
-			return c.String(http.StatusUnauthorized, "Invalid userId in context in next handler")
-		}
-		return c.String(http.StatusOK, "Success")
-	})
+	authMiddleware := middleware.NewAuthenticationMiddleware(nil)
+	authenticate := authMiddleware.Authenticate(nextFunc)
 
 	for _, test := range testCases {
 		if test.token != nil {
@@ -64,7 +54,9 @@ func TestAuthentication_Errors(t *testing.T) {
 		c.SetParamNames("userId")
 		c.SetParamValues(test.pathParamValue)
 
-		assert.ErrorIs(t, authMiddleware(c), test.expectedError)
-		assert.Equal(t, test.expectedStatusCode, rec.Code)
+		err := authenticate(c)
+
+		assert.Error(t, err)
+		assert.IsType(t, test.expectedError, err)
 	}
 }

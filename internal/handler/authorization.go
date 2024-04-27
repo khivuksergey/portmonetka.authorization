@@ -32,46 +32,57 @@ func NewAuthorizationHandler(services *service.Manager, logger logger.Logger) *A
 //	@ID				login
 //	@Accept			json
 //	@Produce		json
-//	@Param			user	body		model.UserLoginDTO	true 	"user login information"
+//	@Param			user	body		model.UserLoginDTO	true 	"User login information"
 //	@Success		200		{object}	common.Response
 //	@Failure		400		{object}	common.Response "Bad Request: Invalid user data"
 //	@Failure		401		{object}	common.Response "Unauthorized: Invalid credentials"
 //	@Router			/login [post]
 func (a AuthorizationHandler) Login(c echo.Context) error {
-	userLoginDTO, err := a.bindUserLoginDto(c)
+	requestUuid := c.Get(common.RequestUuidKey).(string)
+
+	userLoginDTO, err := a.bindUserLoginDtoValidate(c)
 	if err != nil {
-		return c.JSON(http.StatusBadRequest, common.Response{
-			Message: err.Error(),
+		a.logger.Error(logger.LogMessage{
+			Action:      "Login",
+			Message:     "Input data validation failed",
+			Data:        err,
+			RequestUuid: requestUuid,
 		})
+		return common.NewValidationError(common.InvalidInputData, err)
 	}
 
 	tokenResponse, err := a.authorizationService.Login(userLoginDTO)
-
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, common.Response{
-			Message: err.Error(),
+		a.logger.Error(logger.LogMessage{
+			Action:      "Login",
+			Message:     "Login failed",
+			Data:        err,
+			RequestUuid: requestUuid,
 		})
+		return common.NewAuthorizationError(common.LoginFailed, err)
 	}
 
 	a.logger.Info(logger.LogMessage{
-		Action:  "Login",
-		Message: "User logged in",
-		UserId:  &userLoginDTO.Id,
+		Action:      "Login",
+		Message:     "User logged in",
+		UserId:      &userLoginDTO.Id,
+		RequestUuid: requestUuid,
 	})
 
 	return c.JSON(http.StatusOK, common.Response{
-		Message: "logged in successfully",
-		Data:    tokenResponse,
+		Message:     "logged in successfully",
+		Data:        tokenResponse,
+		RequestUuid: requestUuid,
 	})
 }
 
-func (a AuthorizationHandler) bindUserLoginDto(c echo.Context) (*model.UserLoginDTO, error) {
+func (a AuthorizationHandler) bindUserLoginDtoValidate(c echo.Context) (*model.UserLoginDTO, error) {
 	userLoginDTO := new(model.UserLoginDTO)
 	if err := c.Bind(userLoginDTO); err != nil {
-		return nil, common.InvalidUserData
+		return nil, err
 	}
 	if err := a.validate.Struct(userLoginDTO); err != nil {
-		return nil, common.InvalidUserData
+		return nil, err
 	}
 	return userLoginDTO, nil
 }

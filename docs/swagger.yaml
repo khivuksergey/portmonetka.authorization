@@ -5,6 +5,8 @@ definitions:
       data: {}
       message:
         type: string
+      request_uuid:
+        type: string
     type: object
   model.UserCreateDTO:
     properties:
@@ -45,26 +47,14 @@ definitions:
 host: localhost:8080
 info:
   contact: {}
-  description: JWT authorization and authentication. User service.
+  description: |-
+    Authorization service.
+    User service.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   title: Portmonetka authorization & user service
 paths:
-  /health:
-    get:
-      description: Checks if the service is working properly
-      operationId: health
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/common.Response'
-      summary: Check service health
-      tags:
-      - Health
   /login:
     post:
       consumes:
@@ -72,7 +62,7 @@ paths:
       description: Login by username and password
       operationId: login
       parameters:
-      - description: user login information
+      - description: User login information
         in: body
         name: user
         required: true

@@ -15,8 +15,8 @@ type authorization struct {
 	userRepository repository.UserRepository
 }
 
-func NewAuthorizationService(repo *repository.Manager) service.AuthorizationService {
-	return &authorization{userRepository: repo.User}
+func NewAuthorizationService(repositoryManager *repository.Manager) service.AuthorizationService {
+	return &authorization{userRepository: repositoryManager.User}
 }
 
 func (a *authorization) Login(userLoginDTO *model.UserLoginDTO) (*common.TokenResponse, error) {
@@ -29,7 +29,9 @@ func (a *authorization) Login(userLoginDTO *model.UserLoginDTO) (*common.TokenRe
 		return nil, common.GetTokenError(err)
 	}
 
-	a.userRepository.UpdateLastLoginTime(userLoginDTO.Id, tokenResponse.IssuedAt)
+	if err = a.userRepository.UpdateLastLoginTime(userLoginDTO.Id, tokenResponse.IssuedAt); err != nil {
+		return nil, err
+	}
 
 	return tokenResponse, nil
 }
@@ -41,7 +43,7 @@ func (a *authorization) validateUser(userLoginDTO *model.UserLoginDTO) error {
 
 	user, err := a.userRepository.FindUserByName(userLoginDTO.Name)
 	if err != nil {
-		return err
+		return err // common.UserNotFound
 	}
 	userLoginDTO.Id = user.Id
 
@@ -53,10 +55,6 @@ func (a *authorization) validateUser(userLoginDTO *model.UserLoginDTO) error {
 }
 
 func (a *authorization) getToken(user *model.UserLoginDTO) (*common.TokenResponse, error) {
-	if user == nil {
-		return nil, common.NilUserToken
-	}
-
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
@@ -76,7 +74,7 @@ func (a *authorization) getToken(user *model.UserLoginDTO) (*common.TokenRespons
 
 	tokenString, err := token.SignedString([]byte(viper.GetString("JWT_SECRET")))
 	if err != nil {
-		return nil, err
+		return nil, common.TokenSignFail
 	}
 
 	return &common.TokenResponse{

@@ -3,7 +3,7 @@ package repo
 import (
 	"errors"
 	"fmt"
-	autherrors "github.com/khivuksergey/portmonetka.authorization/common"
+	"github.com/khivuksergey/portmonetka.authorization/common"
 	"github.com/khivuksergey/portmonetka.authorization/common/utility"
 	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/entity"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
@@ -27,28 +27,28 @@ func (r *userRepository) Exists(name string) bool {
 	return count > 0
 }
 
-func (r *userRepository) FindUserByName(name string) (user *model.User, err error) {
-	result := r.db.Where("name = ?", name).First(&user)
+func (r *userRepository) FindUserByName(name string) (*model.User, error) {
+	user := &model.User{}
+	result := r.db.Where("name = ?", name).First(user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		err = autherrors.UserNotFound
+		return nil, common.UserNotFound
 	}
-	return
+	return user, nil
 }
 
-func (r *userRepository) CreateUser(name, password string) (userId *uint64, err error) {
+func (r *userRepository) CreateUser(name, password string) (*uint64, error) {
 	hashedPassword, err := utility.HashPassword(password)
 	if err != nil {
-		return
+		return nil, err
 	}
 	user := &model.User{
 		Name:     name,
 		Password: hashedPassword,
 	}
 	if err = r.db.Create(user).Error; err != nil {
-		return
+		return nil, err
 	}
-	userId = &user.Id
-	return
+	return &user.Id, nil
 }
 
 func (r *userRepository) UpdateUserName(id uint64, name string) error {
@@ -73,10 +73,10 @@ func (r *userRepository) DeleteUser(id uint64) error {
 	return r.db.Delete(&model.User{}, id).Error
 }
 
-func (r *userRepository) UpdateLastLoginTime(userId uint64, loginTime time.Time) {
+func (r *userRepository) UpdateLastLoginTime(userId uint64, loginTime time.Time) error {
 	query := fmt.Sprintf("UPDATE %s SET last_login = ? WHERE id = ?", r.tableName)
 	if err := r.db.Exec(query, loginTime, userId).Error; err != nil {
-		fmt.Printf("Error updating last login time: %s. UserId: %d, login time: %v\n",
-			err.Error(), userId, loginTime)
+		return common.UpdateLastLoginTimeTimeError(err)
 	}
+	return nil
 }

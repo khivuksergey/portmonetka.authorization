@@ -17,5 +17,5 @@ type UserRepository interface {
 	UpdateUserName(id uint64, name string) error
 	UpdateUserPassword(id uint64, password string) error
 	DeleteUser(id uint64) error
-	UpdateLastLoginTime(userId uint64, loginTime time.Time)
+	UpdateLastLoginTime(userId uint64, loginTime time.Time) error
 }

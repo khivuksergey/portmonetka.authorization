@@ -2,20 +2,30 @@ package http
 
 import (
 	"github.com/khivuksergey/portmonetka.authorization/config"
+	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/gorm"
+	"github.com/khivuksergey/portmonetka.authorization/internal/core/service"
 	"github.com/khivuksergey/webserver"
-	"net/http"
+	"github.com/khivuksergey/webserver/logger"
 )
 
-type srv struct {
-	webserver.Server
-}
+const configPath = "config.json"
 
-func NewServer(
-	config *config.Configuration,
-	router http.Handler,
-) webserver.Server {
-	server := &srv{
-		Server: webserver.NewServer(&config.WebServer, router, nil),
-	}
+func NewServer() webserver.Server {
+	config.LoadEnv()
+
+	cfg := config.LoadConfiguration(configPath)
+
+	db := gorm.NewDbManager(cfg.DB)
+
+	services := service.NewServiceManager(db.InitRepositoryManager())
+
+	log := logger.Default.SetLevel(logger.GetLogLevelFromString(cfg.Logger.LogLevel))
+
+	router := NewRouter(cfg, services, log)
+
+	server := webserver.NewServer(router).
+		AddLogger(log).
+		AddStopHandlers(webserver.NewStopHandler("Postgres", db.Close))
+
 	return server
 }

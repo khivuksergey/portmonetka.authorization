@@ -1,10 +1,13 @@
 package common
 
-import "time"
+import (
+	"time"
+)
 
 type Response struct {
-	Message string `json:"message"`
-	Data    any    `json:"data,omitempty"`
+	Message     string `json:"message"`
+	Data        any    `json:"data"`
+	RequestUuid string `json:"request_uuid"`
 }
 
 type TokenResponse struct {

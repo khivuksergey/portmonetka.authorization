@@ -99,9 +99,11 @@ func (mr *MockUserRepositoryMockRecorder) FindUserByName(name any) *gomock.Call 
 }
 
 // UpdateLastLoginTime mocks base method.
-func (m *MockUserRepository) UpdateLastLoginTime(userId uint64, loginTime time.Time) {
+func (m *MockUserRepository) UpdateLastLoginTime(userId uint64, loginTime time.Time) error {
 	m.ctrl.T.Helper()
-	m.ctrl.Call(m, "UpdateLastLoginTime", userId, loginTime)
+	ret := m.ctrl.Call(m, "UpdateLastLoginTime", userId, loginTime)
+	ret0, _ := ret[0].(error)
+	return ret0
 }
 
 // UpdateLastLoginTime indicates an expected call of UpdateLastLoginTime.

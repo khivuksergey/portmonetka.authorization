@@ -18,13 +18,13 @@ type dbManager struct {
 	cfg *config.DBConfig
 }
 
-func NewDbManager(config config.DBConfig) (storage.IDB, error) {
+func NewDbManager(config config.DBConfig) storage.IDB {
 	dbm := dbManager{}
 	err := dbm.InitDB(config)
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &dbm, err
+	return &dbm
 }
 
 func (m *dbManager) InitDB(config config.DBConfig) (err error) {
@@ -41,7 +41,7 @@ func (m *dbManager) InitDB(config config.DBConfig) (err error) {
 			PreferSimpleProtocol: true,
 		}),
 		&gorm.Config{
-			Logger: logger.Default.LogMode(logger.Warn),
+			Logger: logger.Default.LogMode(logger.Silent),
 		},
 	)
 
@@ -54,7 +54,7 @@ func (m *dbManager) InitDB(config config.DBConfig) (err error) {
 	return err
 }
 
-func (m *dbManager) InitRepository() *repository.Manager {
+func (m *dbManager) InitRepositoryManager() *repository.Manager {
 	return &repository.Manager{
 		User: repo.NewUserRepository(m.db),
 	}

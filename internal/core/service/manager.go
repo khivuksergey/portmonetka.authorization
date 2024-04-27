@@ -7,9 +7,9 @@ import (
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/service/user"
 )
 
-func NewServiceManager(repo *repository.Manager) *service.Manager {
+func NewServiceManager(repositoryManager *repository.Manager) *service.Manager {
 	return &service.Manager{
-		Authorization: authorization.NewAuthorizationService(repo),
-		User:          user.NewUserService(repo),
+		Authorization: authorization.NewAuthorizationService(repositoryManager),
+		User:          user.NewUserService(repositoryManager),
 	}
 }
