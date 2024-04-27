@@ -11,10 +11,6 @@ func HashPassword(password string) (string, error) {
 }
 
 func VerifyPassword(plaintextPassword, hashedPassword string) bool {
-	hashedPlaintextPassword, err := bcrypt.GenerateFromPassword([]byte(plaintextPassword), bcrypt.DefaultCost)
-	if err != nil {
-		return false
-	}
-	err = bcrypt.CompareHashAndPassword([]byte(hashedPassword), hashedPlaintextPassword)
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(plaintextPassword))
 	return err == nil
 }

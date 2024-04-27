@@ -1,42 +1,49 @@
 package config
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/khivuksergey/webserver"
-	"os"
+	"github.com/spf13/viper"
 )
 
 type Configuration struct {
-	WebServer webserver.WebServerConfig
-	DB        DBConfig
+	Server  webserver.ServerConfig
+	Router  webserver.RouterConfig
+	Swagger *webserver.SwaggerConfig
+	Logger  *LoggerConfig
+	DB      DBConfig
 }
 
 type DBConfig struct {
-	DSN string
+	ConnectionString string
+	TablePrefix      string
 }
 
-func LoadConfiguration(path string) (config *Configuration) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		fmt.Printf("error reading config: %v\n", err)
-		config = loadDefaultConfiguration()
-		return
-	}
+type LoggerConfig struct {
+	LogLevel string
+}
 
-	err = json.Unmarshal(data, &config)
-	if err != nil {
+func LoadConfiguration(path string) *Configuration {
+	config := &Configuration{}
+
+	viper.SetConfigFile(path)
+
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Printf("error reading config from file %s: %v\n", path, err)
+		return defaultConfiguration()
+	}
+	if err := viper.Unmarshal(config); err != nil {
 		fmt.Printf("error unmarshalling configuration: %v\n", err)
-		config = loadDefaultConfiguration()
-		return
+		return defaultConfiguration()
 	}
-	return
+
+	return config
 }
 
-func loadDefaultConfiguration() *Configuration {
+func defaultConfiguration() *Configuration {
 	fmt.Println("loading default configuration...")
 	return &Configuration{
-		WebServer: webserver.DefaultWebServerConfig,
-		DB:        DBConfig{},
+		Server: webserver.DefaultServerConfig,
+		Router: webserver.DefaultRouterConfig,
 	}
 }

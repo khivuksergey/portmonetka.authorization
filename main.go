@@ -1,25 +1,23 @@
 package main
 
 import (
-	"github.com/khivuksergey/portmonetka.authorization/config"
+	"github.com/khivuksergey/portmonetka.authorization/internal/http"
 	"github.com/khivuksergey/webserver"
-	"github.com/khivuksergey/webserver/logger"
 	"os"
 )
 
+// @title Portmonetka authorization & user service
+// @description Authorization service.
+// @description User service.
+// @license.name Apache 2.0
+// @license.url http://www.apache.org/licenses/LICENSE-2.0.html
+// @host localhost:8080
+// @BasePath /
+// @schemes http https
 func main() {
-	cfg := config.LoadConfiguration("config.json")
-	consoleLogger := logger.NewConsoleLogger()
-	webservice := NewWebService(cfg, consoleLogger)
-	router := NewRouter(&cfg.WebServer.HttpHandler, webservice)
-	options := webserver.ServerOptions{
-		UseLogger: true,
-	}
-	server := NewServer(&cfg.WebServer, router, consoleLogger, options)
-
+	server := http.NewServer()
 	quit := make(chan os.Signal, 1)
-	err := webserver.RunServer(server, &quit)
-	if err != nil {
+	if err := webserver.RunServer(server, quit); err != nil {
 		panic(err)
 	}
 }

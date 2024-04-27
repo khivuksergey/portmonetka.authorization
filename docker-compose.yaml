@@ -3,7 +3,7 @@ version: '3.8'
 services:
   portmonetka.authorization:
     build: ./
-    command: ./wait-for-postgres.sh portmonetka.authorization.postgres ./portmonetka.authorization
+    command: sh -c "ls -lah && ./wait-for-postgres.sh portmonetka.authorization.postgres /portmonetka.authorization"
     ports:
       - "8080:8080"
     depends_on:

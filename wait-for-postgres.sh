@@ -1,7 +1,7 @@
 #!/bin/sh
 # wait-for-postgres.sh
 
-set -postgres
+set -e
 
 host="$1"
 shift
