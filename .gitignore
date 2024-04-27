@@ -20,3 +20,7 @@
 # Go workspace file
 go.work
 .idea
+Dockerfile
+Dockerfile.multistage
+wait-for-postgres.sh
+docker-compose.yaml
