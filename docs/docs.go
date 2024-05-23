@@ -48,19 +48,19 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "400": {
                         "description": "Bad Request: Invalid user data",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized: Invalid credentials",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     }
                 }
@@ -95,19 +95,19 @@ const docTemplate = `{
                     "201": {
                         "description": "User created",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "400": {
                         "description": "Bad request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "422": {
                         "description": "Unprocessable entity",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     }
                 }
@@ -146,13 +146,13 @@ const docTemplate = `{
                     "400": {
                         "description": "Bad request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "422": {
                         "description": "Unprocessable entity",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     }
                 }
@@ -194,25 +194,25 @@ const docTemplate = `{
                     "200": {
                         "description": "User password updated",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "400": {
                         "description": "Bad request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "422": {
                         "description": "Unprocessable entity",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     }
                 }
@@ -254,25 +254,25 @@ const docTemplate = `{
                     "200": {
                         "description": "Username updated",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "400": {
                         "description": "Bad request",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "401": {
                         "description": "Unauthorized",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     },
                     "422": {
                         "description": "Unprocessable entity",
                         "schema": {
-                            "$ref": "#/definitions/common.Response"
+                            "$ref": "#/definitions/model.Response"
                         }
                     }
                 }
@@ -280,7 +280,7 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "common.Response": {
+        "model.Response": {
             "type": "object",
             "properties": {
                 "data": {},

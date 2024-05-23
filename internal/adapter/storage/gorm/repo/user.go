@@ -3,11 +3,11 @@ package repo
 import (
 	"errors"
 	"fmt"
-	"github.com/khivuksergey/portmonetka.authorization/common"
-	"github.com/khivuksergey/portmonetka.authorization/common/utility"
+	serviceerror "github.com/khivuksergey/portmonetka.authorization/error"
 	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/entity"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
 	"github.com/khivuksergey/portmonetka.authorization/internal/model"
+	"github.com/khivuksergey/portmonetka.authorization/utility"
 	"gorm.io/gorm"
 	"time"
 )
@@ -23,7 +23,7 @@ func NewUserRepository(db *gorm.DB) repository.UserRepository {
 
 func (r *userRepository) Exists(name string) bool {
 	var count int64
-	r.db.Model(&model.User{}).Where("name = ?", name).Count(&count)
+	r.db.Unscoped().Model(&model.User{}).Where("name = ?", name).Count(&count)
 	return count > 0
 }
 
@@ -31,7 +31,7 @@ func (r *userRepository) FindUserByName(name string) (*model.User, error) {
 	user := &model.User{}
 	result := r.db.Where("name = ?", name).First(user)
 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		return nil, common.UserNotFound
+		return nil, serviceerror.UserNotFound
 	}
 	return user, nil
 }
@@ -76,7 +76,7 @@ func (r *userRepository) DeleteUser(id uint64) error {
 func (r *userRepository) UpdateLastLoginTime(userId uint64, loginTime time.Time) error {
 	query := fmt.Sprintf("UPDATE %s SET last_login = ? WHERE id = ?", r.tableName)
 	if err := r.db.Exec(query, loginTime, userId).Error; err != nil {
-		return common.UpdateLastLoginTimeTimeError(err)
+		return serviceerror.UpdateLastLoginTimeTimeError(err)
 	}
 	return nil
 }

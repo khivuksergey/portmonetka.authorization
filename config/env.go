@@ -2,12 +2,12 @@ package config
 
 import (
 	"fmt"
-	"github.com/khivuksergey/portmonetka.authorization/common"
+	serviceerror "github.com/khivuksergey/portmonetka.authorization/error"
 	"github.com/spf13/viper"
 )
 
 func LoadEnv() {
-	var errMsg common.ErrorMessage
+	var errMsg serviceerror.ErrorMessage
 
 	requiredEnvVars := []string{
 		"JWT_SECRET",

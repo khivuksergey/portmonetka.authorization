@@ -2,11 +2,11 @@ package authorization
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/khivuksergey/portmonetka.authorization/common"
-	"github.com/khivuksergey/portmonetka.authorization/common/utility"
+	serviceerror "github.com/khivuksergey/portmonetka.authorization/error"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/service"
 	"github.com/khivuksergey/portmonetka.authorization/internal/model"
+	"github.com/khivuksergey/portmonetka.authorization/utility"
 	"github.com/spf13/viper"
 	"time"
 )
@@ -19,14 +19,14 @@ func NewAuthorizationService(repositoryManager *repository.Manager) service.Auth
 	return &authorization{userRepository: repositoryManager.User}
 }
 
-func (a *authorization) Login(userLoginDTO *model.UserLoginDTO) (*common.TokenResponse, error) {
+func (a *authorization) Login(userLoginDTO *model.UserLoginDTO) (*model.TokenResponse, error) {
 	if err := a.validateUser(userLoginDTO); err != nil {
 		return nil, err
 	}
 
 	tokenResponse, err := a.getToken(userLoginDTO)
 	if err != nil {
-		return nil, common.GetTokenError(err)
+		return nil, serviceerror.GetTokenError(err)
 	}
 
 	if err = a.userRepository.UpdateLastLoginTime(userLoginDTO.Id, tokenResponse.IssuedAt); err != nil {
@@ -38,7 +38,7 @@ func (a *authorization) Login(userLoginDTO *model.UserLoginDTO) (*common.TokenRe
 
 func (a *authorization) validateUser(userLoginDTO *model.UserLoginDTO) error {
 	if userLoginDTO.Name == "" || userLoginDTO.Password == "" {
-		return common.EmptyNamePassword
+		return serviceerror.EmptyNamePassword
 	}
 
 	user, err := a.userRepository.FindUserByName(userLoginDTO.Name)
@@ -48,17 +48,17 @@ func (a *authorization) validateUser(userLoginDTO *model.UserLoginDTO) error {
 	userLoginDTO.Id = user.Id
 
 	if !utility.VerifyPassword(userLoginDTO.Password, user.Password) {
-		return common.InvalidPassword
+		return serviceerror.InvalidPassword
 	}
 
 	return nil
 }
 
-func (a *authorization) getToken(user *model.UserLoginDTO) (*common.TokenResponse, error) {
+func (a *authorization) getToken(user *model.UserLoginDTO) (*model.TokenResponse, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
-		return nil, common.TokenClaimsFail
+		return nil, serviceerror.TokenClaimsFail
 	}
 
 	now := time.Now()
@@ -74,10 +74,10 @@ func (a *authorization) getToken(user *model.UserLoginDTO) (*common.TokenRespons
 
 	tokenString, err := token.SignedString([]byte(viper.GetString("JWT_SECRET")))
 	if err != nil {
-		return nil, common.TokenSignFail
+		return nil, serviceerror.TokenSignFail
 	}
 
-	return &common.TokenResponse{
+	return &model.TokenResponse{
 		AccessToken: tokenString,
 		TokenType:   "Bearer",
 		ExpiresIn:   int64(expiry.Sub(now).Seconds()),

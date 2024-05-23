@@ -1,12 +1,12 @@
 package authorization
 
 import (
-	"github.com/khivuksergey/portmonetka.authorization/common"
-	"github.com/khivuksergey/portmonetka.authorization/common/utility"
+	serviceerror "github.com/khivuksergey/portmonetka.authorization/error"
 	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/gorm/repo/mock"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/service/authorization"
 	"github.com/khivuksergey/portmonetka.authorization/internal/model"
+	"github.com/khivuksergey/portmonetka.authorization/utility"
 	"github.com/stretchr/testify/assert"
 	"go.uber.org/mock/gomock"
 	"testing"
@@ -14,6 +14,7 @@ import (
 
 func TestLogin_Success(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
@@ -49,6 +50,7 @@ func TestLogin_Success(t *testing.T) {
 
 func TestLogin_InvalidPassword_Error(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
@@ -73,12 +75,13 @@ func TestLogin_InvalidPassword_Error(t *testing.T) {
 
 	token, err := authorizationService.Login(userLoginDTO)
 
-	assert.ErrorIs(t, err, common.InvalidPassword)
+	assert.ErrorIs(t, err, serviceerror.InvalidPassword)
 	assert.Nil(t, token)
 }
 
 func TestLogin_EmptyNamePassword_Error(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
@@ -91,6 +94,6 @@ func TestLogin_EmptyNamePassword_Error(t *testing.T) {
 
 	token, err := authorizationService.Login(userLoginDTO)
 
-	assert.ErrorIs(t, err, common.EmptyNamePassword)
+	assert.ErrorIs(t, err, serviceerror.EmptyNamePassword)
 	assert.Nil(t, token)
 }

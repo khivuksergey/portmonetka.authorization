@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/khivuksergey/portmonetka.authorization/common"
+	serviceerror "github.com/khivuksergey/portmonetka.authorization/error"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/service"
 	"github.com/khivuksergey/portmonetka.authorization/internal/model"
@@ -17,7 +17,7 @@ func NewUserService(repositoryManager *repository.Manager) service.UserService {
 
 func (u *user) CreateUser(userCreateDTO *model.UserCreateDTO) (*uint64, error) {
 	if u.userRepository.Exists(userCreateDTO.Name) {
-		return nil, common.UserAlreadyExists
+		return nil, serviceerror.UserAlreadyExists
 	}
 	return u.userRepository.CreateUser(userCreateDTO.Name, userCreateDTO.Password)
 }
@@ -28,7 +28,7 @@ func (u *user) DeleteUser(userId uint64) error {
 
 func (u *user) UpdateUserName(userUpdateNameDTO *model.UserUpdateNameDTO) error {
 	if u.userRepository.Exists(userUpdateNameDTO.Name) {
-		return common.UserAlreadyExists
+		return serviceerror.UserAlreadyExists
 	}
 	return u.userRepository.UpdateUserName(userUpdateNameDTO.Id, userUpdateNameDTO.Name)
 }

@@ -1,6 +1,6 @@
 basePath: /
 definitions:
-  common.Response:
+  model.Response:
     properties:
       data: {}
       message:
@@ -74,15 +74,15 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "400":
           description: 'Bad Request: Invalid user data'
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "401":
           description: 'Unauthorized: Invalid credentials'
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
       summary: Login with user credentials
       tags:
       - Authorization
@@ -105,15 +105,15 @@ paths:
         "201":
           description: User created
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "422":
           description: Unprocessable entity
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
       summary: Create a new user
       tags:
       - User
@@ -139,11 +139,11 @@ paths:
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "422":
           description: Unprocessable entity
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
       summary: Delete user
       tags:
       - User
@@ -171,19 +171,19 @@ paths:
         "200":
           description: User password updated
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "422":
           description: Unprocessable entity
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
       summary: Update user password
       tags:
       - User
@@ -211,19 +211,19 @@ paths:
         "200":
           description: Username updated
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "400":
           description: Bad request
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "401":
           description: Unauthorized
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
         "422":
           description: Unprocessable entity
           schema:
-            $ref: '#/definitions/common.Response'
+            $ref: '#/definitions/model.Response'
       summary: Update username
       tags:
       - User
