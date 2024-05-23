@@ -1,7 +1,6 @@
 package service
 
 import (
-	"github.com/khivuksergey/portmonetka.authorization/common"
 	"github.com/khivuksergey/portmonetka.authorization/internal/model"
 )
 
@@ -11,7 +10,7 @@ type Manager struct {
 }
 
 type AuthorizationService interface {
-	Login(dto *model.UserLoginDTO) (*common.TokenResponse, error)
+	Login(dto *model.UserLoginDTO) (*model.TokenResponse, error)
 }
 
 type UserService interface {

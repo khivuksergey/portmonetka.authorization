@@ -2,9 +2,10 @@ package handler
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/khivuksergey/portmonetka.authorization/common"
+	serviceerror "github.com/khivuksergey/portmonetka.authorization/error"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/service"
 	"github.com/khivuksergey/portmonetka.authorization/internal/model"
+	"github.com/khivuksergey/portmonetka.common"
 	"github.com/khivuksergey/webserver/logger"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -33,21 +34,21 @@ func NewUserHandler(services *service.Manager, logger logger.Logger) *UserHandle
 // @Accept json
 // @Produce json
 // @Param user body model.UserCreateDTO true "User object to be created"
-// @Success 201 {object} common.Response "User created"
-// @Failure 400 {object} common.Response "Bad request"
-// @Failure 422 {object} common.Response "Unprocessable entity"
+// @Success 201 {object} model.Response "User created"
+// @Failure 400 {object} model.Response "Bad request"
+// @Failure 422 {object} model.Response "Unprocessable entity"
 // @Router /users [post]
 func (u UserHandler) CreateUser(c echo.Context) error {
 	requestUuid := c.Get(common.RequestUuidKey).(string)
 
 	userCreateDTO, err := u.bindUserCreateDtoValidate(c)
 	if err != nil {
-		return common.NewValidationError(common.InvalidInputData, err)
+		return common.NewValidationError(serviceerror.InvalidInputData, err)
 	}
 
 	userId, err := u.userService.CreateUser(userCreateDTO)
 	if err != nil {
-		return common.NewUnprocessableEntityError(common.CannotCreateUser, err)
+		return common.NewUnprocessableEntityError(serviceerror.CannotCreateUser, err)
 	}
 
 	u.logger.Info(logger.LogMessage{
@@ -57,7 +58,7 @@ func (u UserHandler) CreateUser(c echo.Context) error {
 		RequestUuid: requestUuid,
 	})
 
-	return c.JSON(http.StatusCreated, common.Response{
+	return c.JSON(http.StatusCreated, model.Response{
 		Message:     "User created",
 		Data:        map[string]any{"userId": *userId},
 		RequestUuid: requestUuid,
@@ -74,10 +75,10 @@ func (u UserHandler) CreateUser(c echo.Context) error {
 // @Produce json
 // @Param userId path uint64 true "Authorized user ID"
 // @Param user body model.UserUpdateNameDTO true "User update name request"
-// @Success 200 {object} common.Response "Username updated"
-// @Failure 400 {object} common.Response "Bad request"
-// @Failure 401 {object} common.Response "Unauthorized"
-// @Failure 422 {object} common.Response "Unprocessable entity"
+// @Success 200 {object} model.Response "Username updated"
+// @Failure 400 {object} model.Response "Bad request"
+// @Failure 401 {object} model.Response "Unauthorized"
+// @Failure 422 {object} model.Response "Unprocessable entity"
 // @Router /users/{userId}/username [put]
 func (u UserHandler) UpdateUserName(c echo.Context) error {
 	requestUuid := c.Get(common.RequestUuidKey).(string)
@@ -85,12 +86,12 @@ func (u UserHandler) UpdateUserName(c echo.Context) error {
 
 	userUpdateNameDTO, err := u.bindUserUpdateNameDtoValidate(c, userId)
 	if err != nil {
-		return common.NewValidationError(common.InvalidInputData, err)
+		return common.NewValidationError(serviceerror.InvalidInputData, err)
 	}
 
 	err = u.userService.UpdateUserName(userUpdateNameDTO)
 	if err != nil {
-		return common.NewUnprocessableEntityError(common.CannotUpdateUsername, err)
+		return common.NewUnprocessableEntityError(serviceerror.CannotUpdateUsername, err)
 	}
 
 	u.logger.Info(logger.LogMessage{
@@ -100,7 +101,7 @@ func (u UserHandler) UpdateUserName(c echo.Context) error {
 		RequestUuid: requestUuid,
 	})
 
-	return c.JSON(http.StatusOK, common.Response{
+	return c.JSON(http.StatusOK, model.Response{
 		Message:     "Username updated",
 		Data:        map[string]any{"name": userUpdateNameDTO.Name},
 		RequestUuid: requestUuid,
@@ -117,10 +118,10 @@ func (u UserHandler) UpdateUserName(c echo.Context) error {
 // @Produce json
 // @Param userId path uint64 true "Authorized user ID"
 // @Param user body model.UserUpdatePasswordDTO true "User update password request"
-// @Success 200 {object} common.Response "User password updated"
-// @Failure 400 {object} common.Response "Bad request"
-// @Failure 401 {object} common.Response "Unauthorized"
-// @Failure 422 {object} common.Response "Unprocessable entity"
+// @Success 200 {object} model.Response "User password updated"
+// @Failure 400 {object} model.Response "Bad request"
+// @Failure 401 {object} model.Response "Unauthorized"
+// @Failure 422 {object} model.Response "Unprocessable entity"
 // @Router /users/{userId}/password [put]
 func (u UserHandler) UpdateUserPassword(c echo.Context) error {
 	requestUuid := c.Get(common.RequestUuidKey).(string)
@@ -128,12 +129,12 @@ func (u UserHandler) UpdateUserPassword(c echo.Context) error {
 
 	userUpdatePasswordDTO, err := u.bindUserUpdatePasswordDtoValidate(c, userId)
 	if err != nil {
-		return common.NewValidationError(common.InvalidInputData, err)
+		return common.NewValidationError(serviceerror.InvalidInputData, err)
 	}
 
 	err = u.userService.UpdateUserPassword(userUpdatePasswordDTO)
 	if err != nil {
-		return common.NewUnprocessableEntityError(common.CannotUpdatePassword, err)
+		return common.NewUnprocessableEntityError(serviceerror.CannotUpdatePassword, err)
 	}
 
 	u.logger.Info(logger.LogMessage{
@@ -143,7 +144,7 @@ func (u UserHandler) UpdateUserPassword(c echo.Context) error {
 		RequestUuid: requestUuid,
 	})
 
-	return c.JSON(http.StatusOK, common.Response{
+	return c.JSON(http.StatusOK, model.Response{
 		Message:     "User password updated",
 		RequestUuid: requestUuid,
 	})
@@ -159,15 +160,15 @@ func (u UserHandler) UpdateUserPassword(c echo.Context) error {
 // @Produce json
 // @Param userId path uint64 true "User ID"
 // @Success 204 {string} string "No content"
-// @Failure 400 {object} common.Response "Bad request"
-// @Failure 422 {object} common.Response "Unprocessable entity"
+// @Failure 400 {object} model.Response "Bad request"
+// @Failure 422 {object} model.Response "Unprocessable entity"
 // @Router /users/{userId} [delete]
 func (u UserHandler) DeleteUser(c echo.Context) error {
 	requestUuid := c.Get(common.RequestUuidKey).(string)
 	userId := c.Get("userId").(uint64)
 
 	if err := u.userService.DeleteUser(userId); err != nil {
-		return common.NewUnprocessableEntityError(common.CannotDeleteUser, err)
+		return common.NewUnprocessableEntityError(serviceerror.CannotDeleteUser, err)
 	}
 
 	u.logger.Info(logger.LogMessage{

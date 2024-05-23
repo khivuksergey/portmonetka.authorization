@@ -1,7 +1,7 @@
 package user
 
 import (
-	"github.com/khivuksergey/portmonetka.authorization/common"
+	serviceerror "github.com/khivuksergey/portmonetka.authorization/error"
 	"github.com/khivuksergey/portmonetka.authorization/internal/adapter/storage/gorm/repo/mock"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/port/repository"
 	"github.com/khivuksergey/portmonetka.authorization/internal/core/service/user"
@@ -13,6 +13,7 @@ import (
 
 func TestCreateUser_Success(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
@@ -49,6 +50,7 @@ func TestCreateUser_Success(t *testing.T) {
 
 func TestCreateUser_AlreadyExists_Error(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
@@ -70,12 +72,13 @@ func TestCreateUser_AlreadyExists_Error(t *testing.T) {
 
 	createdUserId, err := userService.CreateUser(userCreateDTO)
 
-	assert.ErrorIs(t, err, common.UserAlreadyExists)
+	assert.ErrorIs(t, err, serviceerror.UserAlreadyExists)
 	assert.Nil(t, createdUserId)
 }
 
 func TestDeleteUser_Success(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
@@ -99,6 +102,7 @@ func TestDeleteUser_Success(t *testing.T) {
 
 func TestUpdateUserName_Success(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
@@ -131,6 +135,7 @@ func TestUpdateUserName_Success(t *testing.T) {
 
 func TestUpdateUserName_NameAlreadyExists_Error(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
@@ -152,11 +157,12 @@ func TestUpdateUserName_NameAlreadyExists_Error(t *testing.T) {
 
 	err := userService.UpdateUserName(userUpdateNameDTO)
 
-	assert.ErrorIs(t, err, common.UserAlreadyExists)
+	assert.ErrorIs(t, err, serviceerror.UserAlreadyExists)
 }
 
 func TestUpdateUserPassword_Success(t *testing.T) {
 	ctl := gomock.NewController(t)
+	defer ctl.Finish()
 
 	mockUserRepository := mock.NewMockUserRepository(ctl)
 	mockManager := &repository.Manager{
