@@ -24,7 +24,7 @@ func (a *authorization) Login(userLoginDTO *model.UserLoginDTO) (*model.TokenRes
 		return nil, err
 	}
 
-	tokenResponse, err := a.getToken(userLoginDTO)
+	tokenResponse, err := a.getToken(*userLoginDTO)
 	if err != nil {
 		return nil, serviceerror.GetTokenError(err)
 	}
@@ -54,7 +54,7 @@ func (a *authorization) validateUser(userLoginDTO *model.UserLoginDTO) error {
 	return nil
 }
 
-func (a *authorization) getToken(user *model.UserLoginDTO) (*model.TokenResponse, error) {
+func (a *authorization) getToken(user model.UserLoginDTO) (*model.TokenResponse, error) {
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
