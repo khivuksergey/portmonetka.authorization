@@ -36,19 +36,19 @@ func (r *userRepository) FindUserByName(name string) (*model.User, error) {
 	return user, nil
 }
 
-func (r *userRepository) CreateUser(name, password string) (*uint64, error) {
+func (r *userRepository) CreateUser(name, password string) (uint64, error) {
 	hashedPassword, err := utility.HashPassword(password)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 	user := &model.User{
 		Name:     name,
 		Password: hashedPassword,
 	}
 	if err = r.db.Create(user).Error; err != nil {
-		return nil, err
+		return 0, err
 	}
-	return &user.Id, nil
+	return user.Id, nil
 }
 
 func (r *userRepository) UpdateUserName(id uint64, name string) error {

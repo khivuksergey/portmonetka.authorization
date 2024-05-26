@@ -41,7 +41,8 @@ func NewAuthorizationHandler(services *service.Manager, logger logger.Logger) *A
 func (a AuthorizationHandler) Login(c echo.Context) error {
 	requestUuid := c.Get(common.RequestUuidKey).(string)
 
-	userLoginDTO, err := a.bindUserLoginDtoValidate(c)
+	userLoginDTO := new(model.UserLoginDTO)
+	err := a.bindUserLoginDtoValidate(c, userLoginDTO)
 	if err != nil {
 		a.logger.Error(logger.LogMessage{
 			Action:      "Login",
@@ -77,13 +78,12 @@ func (a AuthorizationHandler) Login(c echo.Context) error {
 	})
 }
 
-func (a AuthorizationHandler) bindUserLoginDtoValidate(c echo.Context) (*model.UserLoginDTO, error) {
-	userLoginDTO := new(model.UserLoginDTO)
+func (a AuthorizationHandler) bindUserLoginDtoValidate(c echo.Context, userLoginDTO *model.UserLoginDTO) error {
 	if err := c.Bind(userLoginDTO); err != nil {
-		return nil, err
+		return err
 	}
 	if err := a.validate.Struct(userLoginDTO); err != nil {
-		return nil, err
+		return err
 	}
-	return userLoginDTO, nil
+	return nil
 }

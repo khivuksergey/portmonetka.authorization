@@ -39,13 +39,13 @@ func TestCreateUser_Success(t *testing.T) {
 		EXPECT().
 		CreateUser(userCreateDTO.Name, userCreateDTO.Password).
 		Times(1).
-		Return(&userCreateId, nil)
+		Return(userCreateId, nil)
 
-	createdUserId, err := userService.CreateUser(userCreateDTO)
+	createdUserId, err := userService.CreateUser(*userCreateDTO)
 
 	assert.NoError(t, err)
 	assert.NotNil(t, createdUserId)
-	assert.Equal(t, *createdUserId, userCreateId)
+	assert.Equal(t, createdUserId, userCreateId)
 }
 
 func TestCreateUser_AlreadyExists_Error(t *testing.T) {
@@ -70,10 +70,10 @@ func TestCreateUser_AlreadyExists_Error(t *testing.T) {
 		Times(1).
 		Return(true)
 
-	createdUserId, err := userService.CreateUser(userCreateDTO)
+	createdUserId, err := userService.CreateUser(*userCreateDTO)
 
 	assert.ErrorIs(t, err, serviceerror.UserAlreadyExists)
-	assert.Nil(t, createdUserId)
+	assert.Zero(t, createdUserId)
 }
 
 func TestDeleteUser_Success(t *testing.T) {
@@ -128,7 +128,7 @@ func TestUpdateUserName_Success(t *testing.T) {
 		Times(1).
 		Return(nil)
 
-	err := userService.UpdateUserName(userUpdateNameDTO)
+	err := userService.UpdateUserName(*userUpdateNameDTO)
 
 	assert.NoError(t, err)
 }
@@ -155,7 +155,7 @@ func TestUpdateUserName_NameAlreadyExists_Error(t *testing.T) {
 		Times(1).
 		Return(true)
 
-	err := userService.UpdateUserName(userUpdateNameDTO)
+	err := userService.UpdateUserName(*userUpdateNameDTO)
 
 	assert.ErrorIs(t, err, serviceerror.UserAlreadyExists)
 }
@@ -182,7 +182,7 @@ func TestUpdateUserPassword_Success(t *testing.T) {
 		Times(1).
 		Return(nil)
 
-	err := userService.UpdateUserPassword(userUpdatePasswordDTO)
+	err := userService.UpdateUserPassword(*userUpdatePasswordDTO)
 
 	assert.NoError(t, err)
 }

@@ -15,9 +15,9 @@ func NewUserService(repositoryManager *repository.Manager) service.UserService {
 	return &user{userRepository: repositoryManager.User}
 }
 
-func (u *user) CreateUser(userCreateDTO *model.UserCreateDTO) (*uint64, error) {
+func (u *user) CreateUser(userCreateDTO model.UserCreateDTO) (uint64, error) {
 	if u.userRepository.Exists(userCreateDTO.Name) {
-		return nil, serviceerror.UserAlreadyExists
+		return 0, serviceerror.UserAlreadyExists
 	}
 	return u.userRepository.CreateUser(userCreateDTO.Name, userCreateDTO.Password)
 }
@@ -26,13 +26,13 @@ func (u *user) DeleteUser(userId uint64) error {
 	return u.userRepository.DeleteUser(userId)
 }
 
-func (u *user) UpdateUserName(userUpdateNameDTO *model.UserUpdateNameDTO) error {
+func (u *user) UpdateUserName(userUpdateNameDTO model.UserUpdateNameDTO) error {
 	if u.userRepository.Exists(userUpdateNameDTO.Name) {
 		return serviceerror.UserAlreadyExists
 	}
 	return u.userRepository.UpdateUserName(userUpdateNameDTO.Id, userUpdateNameDTO.Name)
 }
 
-func (u *user) UpdateUserPassword(userUpdatePasswordDTO *model.UserUpdatePasswordDTO) error {
+func (u *user) UpdateUserPassword(userUpdatePasswordDTO model.UserUpdatePasswordDTO) error {
 	return u.userRepository.UpdateUserPassword(userUpdatePasswordDTO.Id, userUpdatePasswordDTO.Password)
 }

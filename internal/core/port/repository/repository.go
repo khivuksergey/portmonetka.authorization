@@ -13,7 +13,7 @@ type Manager struct {
 type UserRepository interface {
 	Exists(name string) bool
 	FindUserByName(name string) (*model.User, error)
-	CreateUser(name, password string) (*uint64, error)
+	CreateUser(name, password string) (uint64, error)
 	UpdateUserName(id uint64, name string) error
 	UpdateUserPassword(id uint64, password string) error
 	DeleteUser(id uint64) error

@@ -14,8 +14,8 @@ type AuthorizationService interface {
 }
 
 type UserService interface {
-	CreateUser(dto *model.UserCreateDTO) (*uint64, error)
-	UpdateUserName(dto *model.UserUpdateNameDTO) error
-	UpdateUserPassword(dto *model.UserUpdatePasswordDTO) error
+	CreateUser(dto model.UserCreateDTO) (uint64, error)
+	UpdateUserName(dto model.UserUpdateNameDTO) error
+	UpdateUserPassword(dto model.UserUpdatePasswordDTO) error
 	DeleteUser(userId uint64) error
 }
