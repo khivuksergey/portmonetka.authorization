@@ -42,7 +42,7 @@ func (u UserHandler) CreateUser(c echo.Context) error {
 	requestUuid := c.Get(common.RequestUuidKey).(string)
 	userCreateDTO := &model.UserCreateDTO{}
 
-	err := u.bindUserCreateDtoValidate(c, userCreateDTO)
+	err := bindDtoValidate[model.UserCreateDTO](c, u.validate, userCreateDTO)
 	if err != nil {
 		return common.NewValidationError(serviceerror.InvalidInputData, err)
 	}
@@ -84,12 +84,14 @@ func (u UserHandler) CreateUser(c echo.Context) error {
 func (u UserHandler) UpdateUserName(c echo.Context) error {
 	requestUuid := c.Get(common.RequestUuidKey).(string)
 	userId := c.Get("userId").(uint64)
-	userUpdateNameDTO := &model.UserUpdateNameDTO{Id: userId}
+	userUpdateNameDTO := &model.UserUpdateNameDTO{}
 
-	err := u.bindUserUpdateNameDtoValidate(c, userUpdateNameDTO)
+	err := bindDtoValidate[model.UserUpdateNameDTO](c, u.validate, userUpdateNameDTO)
 	if err != nil {
 		return common.NewValidationError(serviceerror.InvalidInputData, err)
 	}
+
+	userUpdateNameDTO.Id = userId
 
 	err = u.userService.UpdateUserName(*userUpdateNameDTO)
 	if err != nil {
@@ -128,12 +130,14 @@ func (u UserHandler) UpdateUserName(c echo.Context) error {
 func (u UserHandler) UpdateUserPassword(c echo.Context) error {
 	requestUuid := c.Get(common.RequestUuidKey).(string)
 	userId := c.Get("userId").(uint64)
-	userUpdatePasswordDTO := &model.UserUpdatePasswordDTO{Id: userId}
+	userUpdatePasswordDTO := &model.UserUpdatePasswordDTO{}
 
-	err := u.bindUserUpdatePasswordDtoValidate(c, userUpdatePasswordDTO)
+	err := bindDtoValidate[model.UserUpdatePasswordDTO](c, u.validate, userUpdatePasswordDTO)
 	if err != nil {
 		return common.NewValidationError(serviceerror.InvalidInputData, err)
 	}
+
+	userUpdatePasswordDTO.Id = userId
 
 	err = u.userService.UpdateUserPassword(*userUpdatePasswordDTO)
 	if err != nil {
@@ -184,31 +188,11 @@ func (u UserHandler) DeleteUser(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
-func (u UserHandler) bindUserCreateDtoValidate(c echo.Context, userCreateDTO *model.UserCreateDTO) error {
-	if err := c.Bind(userCreateDTO); err != nil {
+func bindDtoValidate[T any](c echo.Context, validate *validator.Validate, dto *T) error {
+	if err := c.Bind(dto); err != nil {
 		return err
 	}
-	if err := u.validate.Struct(userCreateDTO); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (u UserHandler) bindUserUpdateNameDtoValidate(c echo.Context, userUpdateNameDTO *model.UserUpdateNameDTO) error {
-	if err := c.Bind(userUpdateNameDTO); err != nil {
-		return err
-	}
-	if err := u.validate.Struct(userUpdateNameDTO); err != nil {
-		return err
-	}
-	return nil
-}
-
-func (u UserHandler) bindUserUpdatePasswordDtoValidate(c echo.Context, userUpdatePasswordDTO *model.UserUpdatePasswordDTO) error {
-	if err := c.Bind(userUpdatePasswordDTO); err != nil {
-		return err
-	}
-	if err := u.validate.Struct(userUpdatePasswordDTO); err != nil {
+	if err := validate.Struct(dto); err != nil {
 		return err
 	}
 	return nil
